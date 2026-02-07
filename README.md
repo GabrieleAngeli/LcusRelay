@@ -1,5 +1,5 @@
 <div style="text-align:center;">
-  <img src="./src/LcusRelay.Tray/assets/lcusrelay.png" alt="LcusRelay" style="max-width:150px;" />
+  <img src="./assets/lcusrelay.png" alt="LcusRelay" style="max-width:150px;" />
 </div>
 
 ---
