@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LcusRelay.Tray", "LcusRelay.Tray.csproj", "{6910D0A4-9234-CC87-B4D1-D03372ED200B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6910D0A4-9234-CC87-B4D1-D03372ED200B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6910D0A4-9234-CC87-B4D1-D03372ED200B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6910D0A4-9234-CC87-B4D1-D03372ED200B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6910D0A4-9234-CC87-B4D1-D03372ED200B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7F79F95D-93DB-40AB-8F5F-48335D6478C5}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,231 @@
+
+using System.Diagnostics;
+using System.Text.Json;
+using LcusRelay.Core.Config;
+using Microsoft.Extensions.Logging;
+
+namespace LcusRelay.Tray.Utils;
+
+public static class ConfigStore
+{
+    private const string AppFolderName = "LcusRelay";
+    private const string ConfigFileName = "config.json";
+
+    public static string GetAppDataDir()
+    {
+        var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AppFolderName);
+        Directory.CreateDirectory(dir);
+        return dir;
+    }
+
+    public static string GetConfigPath()
+        => Path.Combine(GetAppDataDir(), ConfigFileName);
+
+    public static AppConfig LoadOrCreateDefault(ILogger log)
+    {
+        var path = GetConfigPath();
+
+        if (!File.Exists(path))
+        {
+            var cfg = CreateDefault();
+            Save(log, cfg);
+            return cfg;
+        }
+
+        try
+        {
+            var json = File.ReadAllText(path);
+            var cfg = JsonSerializer.Deserialize<AppConfig>(json, ConfigJson.Options);
+            if (cfg is null) throw new InvalidOperationException("config.json vuoto o non valido.");
+            return cfg;
+        }
+        catch (Exception ex)
+        {
+            log.LogError(ex, "Errore nel parsing di config.json. Creo un default (backup dell'attuale).");
+
+            try
+            {
+                var backup = path + ".broken." + DateTime.Now.ToString("yyyyMMdd_HHmmss");
+                File.Copy(path, backup, overwrite: true);
+            }
+            catch { /* ignore */ }
+
+            var cfg = CreateDefault();
+            Save(log, cfg);
+            return cfg;
+        }
+    }
+
+    public static void Save(ILogger log, AppConfig cfg)
+    {
+        var path = GetConfigPath();
+        var json = JsonSerializer.Serialize(cfg, ConfigJson.Options);
+        File.WriteAllText(path, json);
+        log.LogInformation("Config salvata: {path}", path);
+    }
+
+    public static void OpenConfigInEditor(ILogger log)
+    {
+        try
+        {
+            var path = GetConfigPath();
+            if (!File.Exists(path))
+                Save(log, CreateDefault());
+
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = path,
+                UseShellExecute = true
+            });
+        }
+        catch (Exception ex)
+        {
+            log.LogError(ex, "Impossibile aprire config.json");
+        }
+    }
+
+    public static AppConfig CreateDefault()
+    {
+        var cfg = new AppConfig
+        {
+            StartWithWindows = true,
+            Serial = new SerialConfig
+            {
+                Port = null,
+                AutoDetectCh340 = true,
+                Address = 1,
+                BaudRate = 9600,
+                TimeoutMs = 500
+            },
+            Ui = new UiConfig
+            {
+                ShowBalloonOnActions = false
+            },
+            MeetingSignal = new MeetingSignalConfig
+            {
+                Enabled = false,
+                PollSeconds = 2,
+                ProcessNames = new List<string> { "Teams", "ms-teams", "Zoom" }
+            }
+        };
+
+        cfg.SoftwareSignals = new SoftwareSignalsConfig
+        {
+            Enabled = true,
+            EmitRdpSignal = true,
+            PollSeconds = 2,
+            Signals = new List<SoftwareSignalDefinition>
+            {
+                new SoftwareSignalDefinition
+                {
+                    Name = "ninja-desktop",
+                    Enabled = false,
+                    RequireRdp = true,
+                    ProcessNames = new List<string> { "NinjaRMMAgentPatcher", "NinjaRMMAgent" }
+                }
+            }
+        };
+
+        // Default: spegni a logon/logoff (come hai richiesto)
+        cfg.Rules.Add(new RuleConfig
+        {
+            Trigger = "session:logon",
+            Actions = new List<ActionConfig> { new RelayActionConfig { State = "Off" } }
+        });
+
+        cfg.Rules.Add(new RuleConfig
+        {
+            Trigger = "session:logoff",
+            Actions = new List<ActionConfig> { new RelayActionConfig { State = "Off" } }
+        });
+
+        // Hotkey: toggle
+        cfg.Hotkeys.Add(new HotkeyConfig
+        {
+            Name = "toggle",
+            Modifiers = new List<string> { "Control", "Alt" },
+            Key = "L",
+            Actions = new List<ActionConfig> { new RelayActionConfig { State = "Toggle" } }
+        });
+
+        // Schedules esempio (disabilitati di default)
+        cfg.Schedules.Add(new ScheduleConfig
+        {
+            Name = "weekdays-off-23",
+            Enabled = false,
+            Cron = "0 23 * * 1-5",
+            Actions = new List<ActionConfig> { new RelayActionConfig { State = "Off" } }
+        });
+
+        cfg.Schedules.Add(new ScheduleConfig
+        {
+            Name = "weekdays-on-0730",
+            Enabled = false,
+            Cron = "30 7 * * 1-5",
+            Actions = new List<ActionConfig> { new RelayActionConfig { State = "On" } }
+        });
+
+
+        // Win + D (show desktop) detector
+        cfg.Rules.Add(new RuleConfig
+        {
+            Trigger = "session:showdesktop",
+            Enabled = false,
+            Actions = new List<ActionConfig> { new RelayActionConfig { State = "Off" } }
+        });
+
+        cfg.Rules.Add(new RuleConfig
+        {
+            Trigger = "session:hidedesktop",
+            Enabled = false,
+            Actions = new List<ActionConfig> { new RelayActionConfig { State = "On" } }
+        });
+
+        // Meeting signal (se attivato, aggiungi queste regole)
+        cfg.Rules.Add(new RuleConfig
+        {
+            Trigger = "signal:meeting:on",
+            Enabled = false,
+            Actions = new List<ActionConfig> { new RelayActionConfig { State = "Off" } }
+        });
+
+        cfg.Rules.Add(new RuleConfig
+        {
+            Trigger = "signal:meeting:off",
+            Enabled = false,
+            Actions = new List<ActionConfig> { new RelayActionConfig { State = "On" } }
+        });
+
+        // RDP state signal (emesso dal watcher): utile per distinguere sessione locale vs remoto
+        cfg.Rules.Add(new RuleConfig
+        {
+            Trigger = "signal:rdp:on",
+            Enabled = false,
+            Actions = new List<ActionConfig> { new RelayActionConfig { State = "Off" } }
+        });
+
+        cfg.Rules.Add(new RuleConfig
+        {
+            Trigger = "signal:rdp:off",
+            Enabled = false,
+            Actions = new List<ActionConfig> { new RelayActionConfig { State = "On" } }
+        });
+
+        // Ninja Desktop (process + RDP)
+        cfg.Rules.Add(new RuleConfig
+        {
+            Trigger = "signal:ninja-desktop:on",
+            Enabled = false,
+            Actions = new List<ActionConfig> { new RelayActionConfig { State = "Off" } }
+        });
+
+        cfg.Rules.Add(new RuleConfig
+        {
+            Trigger = "signal:ninja-desktop:off",
+            Enabled = false,
+            Actions = new List<ActionConfig> { new RelayActionConfig { State = "On" } }
+        });
+
+        return cfg;
+    }
+}
