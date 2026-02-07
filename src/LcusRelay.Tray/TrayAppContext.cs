@@ -66,6 +66,7 @@ public sealed class TrayAppContext : ApplicationContext
         // Auto-azione (opzionale): al primo avvio in sessione puoi decidere di spegnere subito
         // fire session:logon (utile se avvii via Run key)
         _ = FireSafeAsync("session:logon");
+        _ = FireSafeAsync("system:startup");
 
         // Update check (non-blocking)
         _ = CheckForUpdatesAsync();
