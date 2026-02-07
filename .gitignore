@@ -1,0 +1,11 @@
+# Build
+bin/
+obj/
+.vs/
+
+# User config (generated at runtime, not in repo)
+*.log
+
+# OS
+Thumbs.db
+.DS_Store
