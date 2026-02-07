@@ -1,9 +1,21 @@
+<div style="text-align:center;">
+  <img src="./src/LcusRelay.Tray/assets/lcusrelay.png" alt="LcusRelay" style="max-width:150px;" />
+</div>
+
+---
+
 # LcusRelay (Tray App) - Lamp/Relay Automation for Windows Sessions
 
 A small C# application built on .NET 8 that can control a USB board featuring a CH340 chip, a relay, and a minor hardware modification—through multiple trigger types: Windows session events, hotkeys, cron-based schedules, and process/state signals.
 It is designed to switch the 5V output power on and off.
 
 This repository evolved from the original PowerShell script `scripts/LcusRelay.ps1` into a **Windows tray app** (background program with an icon near the clock) with a minimal UI and an **"IF event THEN action"** engine.
+
+## Circuit diagram
+<div style="text-align:center;">
+  <img src="./assets/Circuit diagram.jpg" alt="LcusRelay" style="max-width:100%;" />
+</div>
+
 
 ## What It Does (MVP)
 - Runs in the background (tray icon).
