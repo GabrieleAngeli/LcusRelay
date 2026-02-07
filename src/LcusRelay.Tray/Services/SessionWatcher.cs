@@ -45,14 +45,15 @@ public sealed class SessionWatcher : IDisposable
 
     private void OnSessionEnding(object? sender, SessionEndingEventArgs e)
     {
-        if (e.Reason == SessionEndingReason.SystemShutdown)
+        var reasonText = e.Reason.ToString();
+        if (string.Equals(reasonText, "SystemShutdown", StringComparison.OrdinalIgnoreCase))
         {
-            _log.LogInformation("SessionEnding ricevuto ({reason}) -> system:shutdown", e.Reason);
+            _log.LogInformation("SessionEnding ricevuto ({reason}) -> system:shutdown", reasonText);
             FireWithDedupe("system:shutdown");
             return;
         }
 
-        _log.LogInformation("SessionEnding ricevuto ({reason}) -> session:logoff", e.Reason);
+        _log.LogInformation("SessionEnding ricevuto ({reason}) -> session:logoff", reasonText);
         FireWithDedupe("session:logoff");
     }
 
