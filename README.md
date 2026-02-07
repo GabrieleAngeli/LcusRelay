@@ -16,6 +16,10 @@ This repository evolved from the original PowerShell script `scripts/LcusRelay.p
   <img src="./assets/Circuit diagram.jpg" alt="LcusRelay" style="max-width:100%;" />
 </div>
 
+### What is the rationale behind choosing this board?
+The choice was driven by its high reconfigurability as a power-control board, with a capacity of up to 10 A at 250 VAC and 30 VDC, making it suitable for driving larger loads.
+It is also worth noting that similar boards based on the same chipset can be managed using the same logic, avoiding the need for circuit modifications.
+
 
 ## What It Does (MVP)
 - Runs in the background (tray icon).
