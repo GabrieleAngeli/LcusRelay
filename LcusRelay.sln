@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31912.275
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LcusRelay.Core", "src\LcusRelay.Core\LcusRelay.Core.csproj", "{A2C7BCE8-CC4D-4D5D-89A9-2C85B99AC1C1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LcusRelay.Tray", "src\LcusRelay.Tray\LcusRelay.Tray.csproj", "{F334A8E4-30D5-4F3F-8F8C-8E7C04D2C3BE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A2C7BCE8-CC4D-4D5D-89A9-2C85B99AC1C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2C7BCE8-CC4D-4D5D-89A9-2C85B99AC1C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2C7BCE8-CC4D-4D5D-89A9-2C85B99AC1C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2C7BCE8-CC4D-4D5D-89A9-2C85B99AC1C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F334A8E4-30D5-4F3F-8F8C-8E7C04D2C3BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F334A8E4-30D5-4F3F-8F8C-8E7C04D2C3BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F334A8E4-30D5-4F3F-8F8C-8E7C04D2C3BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F334A8E4-30D5-4F3F-8F8C-8E7C04D2C3BE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
