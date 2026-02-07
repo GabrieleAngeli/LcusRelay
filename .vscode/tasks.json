@@ -1,0 +1,29 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "restore LcusRelay solution",
+      "type": "process",
+      "command": "dotnet",
+      "args": [
+        "restore",
+        "LcusRelay.sln"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "build LcusRelay",
+      "type": "process",
+      "command": "dotnet",
+      "args": [
+        "build",
+        "src/LcusRelay.Tray/LcusRelay.Tray.csproj"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": "$msCompile"
+    }
+  ]
+}
