@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json.schemastore.org/launch", 
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "LcusRelay",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build LcusRelay",
+      "project": "${workspaceFolder}/src/LcusRelay.Tray/LcusRelay.Tray.csproj",
+      "program": "${workspaceFolder}/src/LcusRelay.Tray/bin/Debug/net8.0-windows/LcusRelay.Tray.dll",
+      "cwd": "${workspaceFolder}/src/LcusRelay.Tray",
+      "args": [],
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_LAUNCH_PROFILE": "https"
+      },
+      "externalConsole": true,
+    }
+  ],
+  "compounds": [
+    {
+      "name": "LcusRelay full stack",
+      "configurations": [
+        "LcusRelay"
+      ]
+    }
+  ]
+}
