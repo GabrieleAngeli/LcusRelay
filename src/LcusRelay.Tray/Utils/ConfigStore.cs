@@ -357,15 +357,6 @@ public static class ConfigStore
                 ProcessNames = new List<string> { "Teams", "ms-teams", "MSTeams", "MicrosoftTeams", "Microsoft Teams", "Zoom" },
                 Mode = "Process",
                 CallWindowKeywords = new List<string> { "meeting", "call", "chiamata", "riunione" }
-            },
-            Update = new UpdateConfig
-            {
-                Enabled = true,
-                CheckOnStartup = true,
-                RepoOwner = "",
-                RepoName = "",
-                InstallerAssetName = "LcusRelay-Setup.exe",
-                AutoInstallOnApproval = true
             }
         };
 
