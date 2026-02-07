@@ -1,6 +1,13 @@
 # LcusRelay Full Guide (Software + Circuit)
 
-This guide explains how the software works and how to build the relay circuit shown in the attached photos (USB relay module with a Songle `SRD-05VDC-SL-C` relay and a 3‑screw terminal block).
+<div style="text-align:center;">
+  <img src="../assets/Circuit diagram.jpg" alt="LcusRelay" style="max-width:100%;" />
+</div>
+
+The choice was driven by its high reconfigurability as a power-control board, with a capacity of up to 10 A at 250 VAC and 30 VDC, making it suitable for driving larger loads.
+It is also worth noting that similar boards based on the same chipset can be managed using the same logic, avoiding the need for circuit modifications.
+
+This guide explains how the software works and how to build the relay circuit shown in the photos (USB relay module with a Songle `SRD-05VDC-SL-C` relay and a 3‑screw terminal block).
 
 ## Safety First
 - Mains voltage (110/230V AC) can be lethal.
@@ -113,6 +120,8 @@ The photos show:
 - The Songle relay and the 3‑screw terminal block (front view).
 - Soldered wires on the back side of the board (you can either solder directly or use the screw terminals).
 - The compact USB relay module assembled and ready to plug in.
+
+Why this board: it is easy to reconfigure, and it supports power control up to 10A 250VAC and 30VDC, which makes it suitable for larger devices.
 
 ---
 
