@@ -170,10 +170,14 @@ public static class ConfigStore
 
         changed |= EnsureRule(cfg, "session:lock", "Off", enabledByDefault: true);
         changed |= EnsureRule(cfg, "session:unlock", "On", enabledByDefault: true);
+        changed |= EnsureRule(cfg, "system:shutdown", "Off", enabledByDefault: true);
+        changed |= EnsureRule(cfg, "system:startup", "On", enabledByDefault: false);
         changed |= EnsureSeries(cfg, "session:logon", "session");
         changed |= EnsureSeries(cfg, "session:logoff", "session");
         changed |= EnsureSeries(cfg, "session:lock", "session");
         changed |= EnsureSeries(cfg, "session:unlock", "session");
+        changed |= EnsureSeries(cfg, "system:shutdown", "system");
+        changed |= EnsureSeries(cfg, "system:startup", "system");
         changed |= EnsureAllowListIfOnRule(cfg, "session:unlock", new[] { "session" });
 
         // Meeting process names: include common Teams variants
@@ -433,6 +437,21 @@ public static class ConfigStore
             Trigger = "session:unlock",
             Series = "session",
             AllowWhenLastSeries = new List<string> { "session" },
+            Actions = new List<ActionConfig> { new RelayActionConfig { State = "On" } }
+        });
+
+        cfg.Rules.Add(new RuleConfig
+        {
+            Trigger = "system:shutdown",
+            Series = "system",
+            Actions = new List<ActionConfig> { new RelayActionConfig { State = "Off" } }
+        });
+
+        cfg.Rules.Add(new RuleConfig
+        {
+            Trigger = "system:startup",
+            Series = "system",
+            Enabled = false,
             Actions = new List<ActionConfig> { new RelayActionConfig { State = "On" } }
         });
 
