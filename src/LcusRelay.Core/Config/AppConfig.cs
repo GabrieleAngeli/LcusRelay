@@ -35,6 +35,9 @@ public sealed class AppConfig
     /// <summary>Opzioni per eventi di sessione.</summary>
     public SessionConfig Session { get; set; } = new();
 
+    /// <summary>Opzioni inattivita utente.</summary>
+    public InactivityConfig Inactivity { get; set; } = new();
+
     /// <summary>Opzioni per aggiornamenti automatici.</summary>
     public UpdateConfig Update { get; set; } = new();
 }
@@ -75,6 +78,21 @@ public sealed class SessionConfig
     /// Se true, se la lampada era OFF prima del lock allora ignora session:unlock.
     /// </summary>
     public bool KeepOffOnUnlockIfWasOff { get; set; } = true;
+}
+
+public sealed class InactivityConfig
+{
+    /// <summary>Abilita rilevamento inattivita tastiera/mouse.</summary>
+    public bool Enabled { get; set; } = true;
+
+    /// <summary>Minuti di inattivita prima di emettere trigger "system:idle".</summary>
+    public int IdleMinutes { get; set; } = 30;
+
+    /// <summary>Intervallo polling in secondi.</summary>
+    public int PollSeconds { get; set; } = 5;
+
+    /// <summary>Se true, al ritorno attivita emette trigger "system:active".</summary>
+    public bool EmitActiveOnReturn { get; set; } = true;
 }
 
 public sealed class UpdateConfig

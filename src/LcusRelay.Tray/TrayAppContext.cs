@@ -32,6 +32,7 @@ public sealed class TrayAppContext : ApplicationContext
     private MeetingProcessWatcher? _meetingWatcher;
     private SoftwareSignalsWatcher? _softwareSignalsWatcher;
     private MeetingReminderWatcher? _meetingReminderWatcher;
+    private InactivityWatcher? _inactivityWatcher;
 
     private readonly SemaphoreSlim _blinkSemaphore = new(1, 1);
     private bool? _wasOffBeforeLock;
@@ -198,6 +199,9 @@ public sealed class TrayAppContext : ApplicationContext
 
         _meetingReminderWatcher = new MeetingReminderWatcher(_log, cfg.MeetingReminders, async rule => await FireMeetingReminderAsync(rule));
         _meetingReminderWatcher.Start();
+
+        _inactivityWatcher = new InactivityWatcher(_log, cfg.Inactivity, async ev => await FireSafeAsync(ev));
+        _inactivityWatcher.Start();
     }
 
     private void StopWatchers()
@@ -208,6 +212,7 @@ public sealed class TrayAppContext : ApplicationContext
         _meetingWatcher?.Dispose();
         _softwareSignalsWatcher?.Dispose();
         _meetingReminderWatcher?.Dispose();
+        _inactivityWatcher?.Dispose();
 
         _sessionWatcher = null;
         _hotkeyWatcher = null;
@@ -215,6 +220,7 @@ public sealed class TrayAppContext : ApplicationContext
         _meetingWatcher = null;
         _softwareSignalsWatcher = null;
         _meetingReminderWatcher = null;
+        _inactivityWatcher = null;
     }
 
     private void ReloadEngine(AppConfig cfg)
