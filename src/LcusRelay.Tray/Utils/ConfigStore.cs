@@ -166,18 +166,21 @@ public static class ConfigStore
         cfg.MeetingSignal ??= new MeetingSignalConfig();
         cfg.SoftwareSignals ??= new SoftwareSignalsConfig();
         cfg.Session ??= new SessionConfig();
+        cfg.Inactivity ??= new InactivityConfig();
         cfg.Update ??= new UpdateConfig();
 
         changed |= EnsureRule(cfg, "session:lock", "Off", enabledByDefault: true);
         changed |= EnsureRule(cfg, "session:unlock", "On", enabledByDefault: true);
         changed |= EnsureRule(cfg, "system:shutdown", "Off", enabledByDefault: true);
         changed |= EnsureRule(cfg, "system:startup", "On", enabledByDefault: false);
+        changed |= EnsureRule(cfg, "system:idle", "On", enabledByDefault: true);
         changed |= EnsureSeries(cfg, "session:logon", "session");
         changed |= EnsureSeries(cfg, "session:logoff", "session");
         changed |= EnsureSeries(cfg, "session:lock", "session");
         changed |= EnsureSeries(cfg, "session:unlock", "session");
         changed |= EnsureSeries(cfg, "system:shutdown", "system");
         changed |= EnsureSeries(cfg, "system:startup", "system");
+        changed |= EnsureSeries(cfg, "system:idle", "inactivity");
         changed |= EnsureAllowListIfOnRule(cfg, "session:unlock", new[] { "session" });
 
         // Meeting process names: include common Teams variants
@@ -444,6 +447,13 @@ public static class ConfigStore
             Series = "system",
             Enabled = false,
             Actions = new List<ActionConfig> { new RelayActionConfig { State = "On" } }
+        });
+
+        cfg.Rules.Add(new RuleConfig
+        {
+            Trigger = "system:idle",
+            Series = "inactivity",
+            Actions = new List<ActionConfig> { new RelayActionConfig { State = "Off" } }
         });
 
         // Hotkey: toggle
