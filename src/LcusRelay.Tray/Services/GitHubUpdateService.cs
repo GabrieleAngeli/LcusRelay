@@ -46,16 +46,33 @@ public sealed class GitHubUpdateService
             if (tagVersion <= currentVersion)
                 return null;
 
-            var asset = release.assets?.FirstOrDefault(a =>
-                string.Equals(a.name, cfg.InstallerAssetName, StringComparison.OrdinalIgnoreCase));
+            var asset = ResolveInstallerAsset(release.assets, cfg);
 
             if (asset is null)
             {
-                log.LogWarning("Update check: installer asset not found: {asset}", cfg.InstallerAssetName);
+                var availableAssets = release.assets is null || release.assets.Count == 0
+                    ? "(none)"
+                    : string.Join(", ", release.assets
+                        .Select(a => a.name)
+                        .Where(name => !string.IsNullOrWhiteSpace(name))
+                        .Select(name => name!.Trim()));
+
+                log.LogWarning(
+                    "Update check: installer asset not found. Expected={asset}. Available={available}",
+                    cfg.InstallerAssetName,
+                    availableAssets);
                 return null;
             }
 
-            return new UpdateInfo(tagVersion, asset.name, asset.browser_download_url);
+            var assetName = asset.name?.Trim();
+            var downloadUrl = asset.browser_download_url?.Trim();
+            if (string.IsNullOrWhiteSpace(assetName) || string.IsNullOrWhiteSpace(downloadUrl))
+            {
+                log.LogWarning("Update check: selected asset is missing required metadata.");
+                return null;
+            }
+
+            return new UpdateInfo(tagVersion, assetName, downloadUrl);
         }
         catch (Exception ex)
         {
@@ -94,6 +111,42 @@ public sealed class GitHubUpdateService
             t = t[1..];
 
         return Version.TryParse(t, out var v) ? v : null;
+    }
+
+    private static GitHubAsset? ResolveInstallerAsset(List<GitHubAsset>? assets, UpdateConfig cfg)
+    {
+        if (assets is null || assets.Count == 0)
+            return null;
+
+        var configuredName = (cfg.InstallerAssetName ?? "").Trim();
+        if (!string.IsNullOrWhiteSpace(configuredName))
+        {
+            var exact = assets.FirstOrDefault(a =>
+                string.Equals(a.name?.Trim(), configuredName, StringComparison.OrdinalIgnoreCase));
+
+            if (exact is not null)
+                return exact;
+        }
+
+        var repoName = (cfg.RepoName ?? "").Trim();
+
+        var installerExe = assets.FirstOrDefault(a =>
+        {
+            var name = a.name?.Trim();
+            if (string.IsNullOrWhiteSpace(name) || !name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            return name.Contains("setup", StringComparison.OrdinalIgnoreCase)
+                || name.Contains("installer", StringComparison.OrdinalIgnoreCase)
+                || (!string.IsNullOrWhiteSpace(repoName) && name.Contains(repoName, StringComparison.OrdinalIgnoreCase));
+        });
+
+        if (installerExe is not null)
+            return installerExe;
+
+        return assets.FirstOrDefault(a =>
+            !string.IsNullOrWhiteSpace(a.name)
+            && a.name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase));
     }
 
     private static HttpClient CreateHttpClient()
