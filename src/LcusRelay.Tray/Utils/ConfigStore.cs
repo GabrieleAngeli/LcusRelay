@@ -181,7 +181,7 @@ public static class ConfigStore
         changed |= EnsureSeries(cfg, "system:shutdown", "system");
         changed |= EnsureSeries(cfg, "system:startup", "system");
         changed |= EnsureSeries(cfg, "system:idle", "inactivity");
-        changed |= EnsureAllowListIfOnRule(cfg, "session:unlock", new[] { "session" });
+        changed |= EnsureAllowListContains(cfg, "session:unlock", new[] { "session", "inactivity" });
 
         // Meeting process names: include common Teams variants
         changed |= EnsureProcessNames(cfg.MeetingSignal, new[]
@@ -266,20 +266,32 @@ public static class ConfigStore
         return changed;
     }
 
-    private static bool EnsureAllowListIfOnRule(AppConfig cfg, string trigger, IEnumerable<string> allow)
+    private static bool EnsureAllowListContains(AppConfig cfg, string trigger, IEnumerable<string> allow)
     {
         var rule = cfg.Rules.FirstOrDefault(r => string.Equals(r.Trigger?.Trim(), trigger, StringComparison.OrdinalIgnoreCase));
         if (rule is null) return false;
-
-        if (rule.AllowWhenLastSeries is not null && rule.AllowWhenLastSeries.Count > 0)
-            return false;
 
         var hasOnRelay = rule.Actions.Any(a => a is RelayActionConfig rac
                                               && string.Equals(rac.State?.Trim(), "On", StringComparison.OrdinalIgnoreCase));
         if (!hasOnRelay) return false;
 
-        rule.AllowWhenLastSeries = allow.ToList();
-        return true;
+        rule.AllowWhenLastSeries ??= new List<string>();
+
+        var changed = false;
+        foreach (var entry in allow)
+        {
+            var value = (entry ?? "").Trim();
+            if (string.IsNullOrWhiteSpace(value))
+                continue;
+
+            if (rule.AllowWhenLastSeries.Any(x => string.Equals(x?.Trim(), value, StringComparison.OrdinalIgnoreCase)))
+                continue;
+
+            rule.AllowWhenLastSeries.Add(value);
+            changed = true;
+        }
+
+        return changed;
     }
 
     private static bool EnsureRule(AppConfig cfg, string trigger, bool enabledByDefault, ActionConfig action)
@@ -430,7 +442,7 @@ public static class ConfigStore
         {
             Trigger = "session:unlock",
             Series = "session",
-            AllowWhenLastSeries = new List<string> { "session" },
+            AllowWhenLastSeries = new List<string> { "session", "inactivity" },
             Actions = new List<ActionConfig> { new RelayActionConfig { State = "On" } }
         });
 
